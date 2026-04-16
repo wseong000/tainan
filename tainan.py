@@ -1,16 +1,11 @@
-
 import requests
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
 from IPython.display import display
 
-
-
 plt.rcParams["font.family"] = "Microsoft JhengHei"
 plt.rcParams["axes.unicode_minus"] = False
-
-
 
 LATITUDE = 22.9999
 LONGITUDE = 120.2270
@@ -88,6 +83,18 @@ def get_outfit_advice(max_temp, min_temp, rain_prob):
         advice.append("通常不用帶雨傘，免驚啦")
 
     return "；".join(advice)
+def get_exercise_advice(max_temp, min_temp, rain_prob):
+    if rain_prob >= 60:
+        return "適合室內運動"
+    elif rain_prob >= 30:
+        return "適合輕度運動"
+    else:
+        if max_temp >= 28:
+            return "適合輕度運動"
+        elif max_temp >= 22:
+            return "天氣舒適，適合戶外運動"
+        else:
+            return "天氣較涼，適合散步或慢跑"
 
 
 
@@ -119,6 +126,14 @@ def fetch_weather_data():
             ),
             axis=1
         )
+        df["適合運動"] = df.apply(
+    lambda row: get_exercise_advice(
+        row["最高溫"],
+        row["最低溫"],
+        row["降雨機率"]
+    ),
+    axis=1
+)
 
         return df
 
@@ -143,6 +158,7 @@ def show_weather(df):
         print(f"最低溫：{row['最低溫']}°C")
         print(f"降雨機率：{row['降雨機率']}%")
         print(f"提醒：{row['提醒']}")
+        print(f"適合運動:{row['適合運動']}")
         print("-" * 60)
 
 
@@ -173,7 +189,7 @@ def main():
     if df is not None:
         show_weather(df)
 
-        display(df[["日期", "天氣狀況", "最高溫", "最低溫", "降雨機率", "提醒"]])
+        display(df[["日期", "天氣狀況", "最高溫", "最低溫", "降雨機率", "提醒","適合運動"]])
         plot_temperature(df)
 
         # 如果你想把資料存成 CSV，可以取消下面註解
