@@ -3,6 +3,8 @@ import requests
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
+from IPython.display import display
+
 
 
 plt.rcParams["font.family"] = "Microsoft JhengHei"
@@ -171,9 +173,7 @@ def main():
     if df is not None:
         show_weather(df)
 
-        print("\n整理後的表格：")
-        print(df[["日期", "天氣狀況", "最高溫", "最低溫", "降雨機率", "提醒"]])
-
+        display(df[["日期", "天氣狀況", "最高溫", "最低溫", "降雨機率", "提醒"]])
         plot_temperature(df)
 
         # 如果你想把資料存成 CSV，可以取消下面註解
