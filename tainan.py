@@ -1,11 +1,15 @@
-# %%
+
 import requests
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib import font_manager
 
-# =========================
-# 基本設定：台南座標
-# =========================
+
+plt.rcParams["font.family"] = "Microsoft JhengHei"
+plt.rcParams["axes.unicode_minus"] = False
+
+
+
 LATITUDE = 22.9999
 LONGITUDE = 120.2270
 
@@ -18,9 +22,7 @@ API_URL = (
     "&forecast_days=7"
 )
 
-# =========================
-# 天氣代碼轉中文
-# =========================
+
 def weather_code_to_text(code):
     weather_dict = {
         0: "晴天",
@@ -55,9 +57,9 @@ def weather_code_to_text(code):
     return weather_dict.get(code, "未知天氣")
 
 
-# =========================
+
 # 穿搭與帶傘提醒
-# =========================
+
 def get_outfit_advice(max_temp, min_temp, rain_prob):
     advice = []
 
@@ -86,9 +88,9 @@ def get_outfit_advice(max_temp, min_temp, rain_prob):
     return "；".join(advice)
 
 
-# =========================
+
 # 抓天氣資料
-# =========================
+
 def fetch_weather_data():
     try:
         response = requests.get(API_URL, timeout=10)
@@ -124,9 +126,9 @@ def fetch_weather_data():
         return None
 
 
-# =========================
+
 # 顯示天氣資訊
-# =========================
+
 def show_weather(df):
     print("=" * 60)
     print("台南未來一週天氣與穿搭提醒系統")
@@ -142,9 +144,9 @@ def show_weather(df):
         print("-" * 60)
 
 
-# =========================
+
 # 畫圖
-# =========================
+
 def plot_temperature(df):
     plt.figure(figsize=(10, 5))
     plt.plot(df["日期"], df["最高溫"], marker="o", label="最高溫")
@@ -160,9 +162,9 @@ def plot_temperature(df):
     plt.show()
 
 
-# =========================
+
 # 主程式
-# =========================
+
 def main():
     df = fetch_weather_data()
 
