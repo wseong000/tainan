@@ -18,6 +18,13 @@ API_URL = (
     "&timezone=Asia%2FTaipei"
     "&forecast_days=7"
 )
+AIR_API_URL = (
+    "https://air-quality-api.open-meteo.com/v1/air-quality"
+    f"?latitude={LATITUDE}"
+    f"&longitude={LONGITUDE}"
+    "&current=pm10,pm2_5,us_aqi"
+    "&timezone=Asia%2FTaipei"
+)
 
 
 def weather_code_to_text(code):
@@ -83,6 +90,17 @@ def get_outfit_advice(max_temp, min_temp, rain_prob):
         advice.append("通常不用帶雨傘，免驚啦")
 
     return "；".join(advice)
+def get_air_quality_advice(us_aqi):
+    if us_aqi <= 50:
+        return "空氣品質良好"
+    elif us_aqi <= 100:
+        return "空氣品質普通"
+    elif us_aqi <= 150:
+        return "空氣品質對敏感族群不太友善，外出戴口罩，小心哈邱"
+    elif us_aqi <= 200:
+        return "空氣品質差，待在室內呦"
+    else:
+        return "空氣品質很差，不要亂亂跑!!!!!"
 def get_exercise_advice(max_temp, min_temp, rain_prob):
     if rain_prob >= 60:
         return "適合室內運動"
@@ -134,11 +152,34 @@ def fetch_weather_data():
     ),
     axis=1
 )
+    
 
         return df
 
     except requests.exceptions.RequestException as e:
         print("無法取得天氣資料，請檢查網路或 API 狀態。")
+        print("錯誤訊息：", e)
+        return None
+def fetch_air_quality_data():
+    try:
+        response = requests.get(AIR_API_URL, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+
+        current = data["current"]
+
+        air_data = {
+            "PM2.5": current["pm2_5"],
+            "PM10": current["pm10"],
+            "AQI": current["us_aqi"]
+        }
+
+        air_data["空氣品質提醒"] = get_air_quality_advice(air_data["AQI"])
+
+        return air_data
+
+    except requests.exceptions.RequestException as e:
+        print("無法取得空氣品質資料。")
         print("錯誤訊息：", e)
         return None
 
@@ -159,6 +200,7 @@ def show_weather(df):
         print(f"降雨機率：{row['降雨機率']}%")
         print(f"提醒：{row['提醒']}")
         print(f"適合運動:{row['適合運動']}")
+        print(f"空氣品質提醒:{row['空氣品質提醒']}")
         print("-" * 60)
 
 
@@ -185,11 +227,22 @@ def plot_temperature(df):
 
 def main():
     df = fetch_weather_data()
+    air_data = fetch_air_quality_data()
 
     if df is not None:
+        if air_data is not None:
+            df["PM2.5"] = air_data["PM2.5"]
+            df["PM10"] = air_data["PM10"]
+            df["AQI"] = air_data["AQI"]
+            df["空氣品質提醒"] = air_data["空氣品質提醒"]
+        else:
+            df["PM2.5"] = None
+            df["PM10"] = None
+            df["AQI"] = None
+            df["空氣品質提醒"] = "無資料"
         show_weather(df)
 
-        display(df[["日期", "天氣狀況", "最高溫", "最低溫", "降雨機率", "提醒","適合運動"]])
+        display(df[["日期", "天氣狀況", "最高溫", "最低溫", "降雨機率", "提醒","適合運動","PM2.5", "PM10", "AQI", "空氣品質提醒"]])
         plot_temperature(df)
 
         # 如果你想把資料存成 CSV，可以取消下面註解
