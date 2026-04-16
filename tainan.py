@@ -64,26 +64,26 @@ def get_outfit_advice(max_temp, min_temp, rain_prob):
     advice = []
 
     # 穿搭判斷
-    if max_temp >= 32:
-        advice.append("建議穿短袖，天氣炎熱，注意防曬與補水")
-    elif max_temp >= 28:
-        advice.append("建議穿短袖或輕便衣物")
-    elif max_temp >= 24:
+    if max_temp >= 28:
+        advice.append("建議穿短袖，天氣炎熱，要注意防曬與補水喔!才不會中暑!!")
+    elif max_temp >= 25:
+        advice.append("建議穿短袖或輕便衣物，怕太熱")
+    elif max_temp >= 22:
         advice.append("可穿薄長袖或短袖")
     else:
-        advice.append("建議穿薄外套或長袖")
+        advice.append("建議穿薄外套或長袖，小心著涼喔")
 
     # 日夜溫差判斷
     if (max_temp - min_temp) >= 8:
-        advice.append("日夜溫差較大，早晚可多帶一件外套")
+        advice.append("日夜溫差較大，早晚可多帶一件外套，才不會感冒==")
 
     # 雨傘判斷
     if rain_prob >= 60:
-        advice.append("記得帶雨傘")
+        advice.append("記得帶雨傘，才不會變成落湯雞呦")
     elif rain_prob >= 30:
-        advice.append("建議攜帶折傘")
+        advice.append("建議攜帶折傘，以防萬一啦")
     else:
-        advice.append("通常不用帶雨傘")
+        advice.append("通常不用帶雨傘，免驚啦")
 
     return "；".join(advice)
 
